@@ -44,7 +44,7 @@ public class LoginTest extends BaseTest {
     }
 
     @Test
-    public void bookStoreTest() {
+    public void bookStoreTest () {
         page.navigate("https://demoqa.com/books");
         int randomNumberOfBooks = Randomizer.randomNumber(2, 5);
         page.onDialog(dialog -> {
@@ -54,6 +54,12 @@ public class LoginTest extends BaseTest {
                 Assertions.assertEquals("Book deleted.", dialog.message());
             } else if (dialog.message().contains("All Books deleted")) {
                 Assertions.assertEquals("All Books deleted.", dialog.message());
+            } else {
+                try {
+                    throw new Exception("Dialog message is wrong " + dialog.message());
+                } catch (Exception e) {
+                    throw new RuntimeException("");
+                }
             }
             dialog.accept();
         });
