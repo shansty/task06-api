@@ -3,8 +3,8 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
 public class BookStorePage extends BasePage {
-    private Locator booksArrayLocator;
-    private Locator bookStoreButton;
+    private final Locator booksArrayLocator;
+    private final Locator bookStoreButton;
     public String booksUrl = "https://demoqa.com/BookStore/v1/Books";
     public BookStorePage(Page page) {
         super(page);

@@ -13,13 +13,13 @@ public class ProfilePage extends BasePage {
     private String cookieNameToken = "token";
     private String cookieNameUserName = "userName";
     private String cookieNameExpires = "expires";
-    private Locator profileButton;
-    private Locator booksTitle;
-    private Locator booksAuthor;
-    private Locator booksPublisher;
-    private Locator deletedBook;
-    private Locator deleteAllBooksButton;
-    private Locator emptyCollection;
+    private final Locator profileButton;
+    private final Locator booksTitle;
+    private final Locator booksAuthor;
+    private final Locator booksPublisher;
+    private final Locator deletedBook;
+    private final Locator deleteAllBooksButton;
+    private final Locator emptyCollection;
 
     public ProfilePage(Page page) {
         super(page);

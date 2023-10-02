@@ -1,9 +1,12 @@
 import by.itechartgroup.anastasiya.shirochina.api.ApiBookStore;
+import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
+import by.itechartgroup.anastasiya.shirochina.pages.BookStorePage;
 import by.itechartgroup.anastasiya.shirochina.utils.Randomizer;
 import by.itechartgroup.anastasiya.shirochina.utils.Reader;
 import by.itechartgroup.anastasiya.shirochina.utils.Route;
 import by.itechartgroup.anastasiya.shirochina.utils.Screenshot;
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,7 +60,7 @@ public class LoginTest extends BaseTest {
         List<Book> books = new LinkedList<>();
         for (int i = 0; i < randomNumberOfBooks; i++) {
             Response response = page.waitForResponse("https://demoqa.com/BookStore/v1/Book?ISBN=*", () ->
-                    bookStore.getBooksArrayLocator().nth(Randomizer.randomNumber(0, bookStore.getBooksArrayLocator().all().size() - 1)).click());
+                    bookStore.getBooksArrayLocator().nth(Randomizer.randomNumber(0, bookStore.getBooksArrayLocator().count()-1)).click());
             Book bookFromResponse = apiBook.getBook(response);
             if (!books.contains(bookFromResponse)) {
                 books.add(bookFromResponse);
@@ -77,18 +80,19 @@ public class LoginTest extends BaseTest {
         Locator deletedBook = profile.getDeletedBook().nth(1);
         String deletedBookTitle = profile.getBooksTitle().nth(1).textContent();
         deletedBook.click();
-        assertThat(dialogForDeletingOneBook.getDialogBody()).containsText("Do you want to delete this book?");
-        assertThat(dialogForDeletingOneBook.getDialogTitle()).containsText("Delete Book");
-        assertThat(dialogForDeletingOneBook.getOkButton()).isVisible();
-        assertThat(dialogForDeletingOneBook.getCancelButton()).isVisible();
-        dialogForDeletingOneBook.getOkButton().click();
+        dialog = new Dialog(page);
+        assertThat(dialog.getDialogBody()).containsText("Do you want to delete this book?");
+        assertThat(dialog.getDialogTitle()).containsText("Delete Book");
+        assertThat(dialog.getOkButton()).isVisible();
+        assertThat(dialog.getCancelButton()).isVisible();
+        dialog.getOkButton().click();
         assertThat(profile.getDeletedBooksTitle(deletedBookTitle)).hasCount(0);
         profile.getDeleteAllBooksButton().click();
-        assertThat(dialogForDeletingAllBooks.getDialogBody()).containsText("Do you want to delete all books?");
-        assertThat(dialogForDeletingAllBooks.getDialogTitle()).containsText("Delete All Books");
-        assertThat(dialogForDeletingAllBooks.getCancelButton()).isVisible();
-        assertThat(dialogForDeletingAllBooks.getOkButton()).isVisible();
-        dialogForDeletingAllBooks.getOkButton().click();
+        assertThat(dialog.getDialogBodyForAllBooks()).containsText("Do you want to delete all books?");
+        assertThat(dialog.getDialogTitle()).containsText("Delete All Books");
+        assertThat(dialog.getCancelButton()).isVisible();
+        assertThat(dialog.getOkButton()).isVisible();
+        dialog.getOkButton().click();
         assertThat(profile.getEmptyCollection()).containsText("No rows found");
         assertThat(profile.getBooksTitle()).hasCount(0);
     }

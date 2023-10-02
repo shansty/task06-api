@@ -4,9 +4,9 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
 public class BookPage extends BasePage {
-    private Locator uiPageNumberLocator;
-    private Locator addToCollectionButton;
-    private Locator backToBookStoreButton;
+    private final Locator uiPageNumberLocator;
+    private final Locator addToCollectionButton;
+    private final Locator backToBookStoreButton;
     public BookPage(Page page) {
         super(page);
         this.uiPageNumberLocator = page.locator("//div[@id = 'pages-wrapper']//label[@id = 'userName-value']");

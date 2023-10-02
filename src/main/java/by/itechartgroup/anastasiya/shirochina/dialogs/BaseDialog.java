@@ -5,8 +5,8 @@ import com.microsoft.playwright.Page;
 
 public class BaseDialog {
     Page page;
-    private Locator okButton;
-    private Locator cancelButton;
+    private final Locator okButton;
+    private final Locator cancelButton;
     public BaseDialog(Page page) {
         this.page = page;
         this.okButton = page.locator("//button[@id='closeSmallModal-ok']");

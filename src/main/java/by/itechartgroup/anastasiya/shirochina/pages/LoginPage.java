@@ -7,9 +7,9 @@ import com.microsoft.playwright.Page;
 import java.io.IOException;
 
 public class LoginPage extends BasePage{
-    private Locator userNameInput;
-    private Locator passwordInput;
-    private Locator submitButton;
+    private final Locator userNameInput;
+    private final Locator passwordInput;
+    private final Locator submitButton;
 
     public LoginPage(Page page) {
         super(page);
