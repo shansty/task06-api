@@ -58,7 +58,7 @@ public class LoginTest extends BaseTest {
                 try {
                     throw new Exception("Dialog message is wrong " + dialog.message());
                 } catch (Exception e) {
-                    throw new RuntimeException("");
+                    throw new RuntimeException(e);
                 }
             }
             dialog.accept();
