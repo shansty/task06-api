@@ -1,3 +1,4 @@
+import by.itechartgroup.anastasiya.shirochina.DialogPageHelper;
 import by.itechartgroup.anastasiya.shirochina.api.ApiBook;
 import by.itechartgroup.anastasiya.shirochina.api.ApiLogin;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
@@ -26,6 +27,7 @@ public class BaseTest {
     static File file;
     ApiBook apiBook;
     static Dialog dialog;
+    static DialogPageHelper dialogPageHelper;
 
 
     @BeforeAll
@@ -59,6 +61,7 @@ public class BaseTest {
         if (file.exists()) {
             context = browser.newContext(new Browser.NewContextOptions().setStorageStatePath(Paths.get(file.getPath())));
             page = context.newPage();
+            dialogPageHelper = new DialogPageHelper(page);
         } else {
             throw new Exception("Файл с данныйми для аутентификации не найден " + file.getName());
         }

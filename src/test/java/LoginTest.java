@@ -1,3 +1,4 @@
+import by.itechartgroup.anastasiya.shirochina.DialogPageHelper;
 import by.itechartgroup.anastasiya.shirochina.api.ApiBookStore;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
 import by.itechartgroup.anastasiya.shirochina.utils.Randomizer;
@@ -14,10 +15,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class LoginTest extends BaseTest {
+    Semaphore semaphore = new Semaphore(0);
+
     @Test
     public void loginFormTest() throws IOException {
         page.navigate("https://demoqa.com/profile");
@@ -45,6 +49,14 @@ public class LoginTest extends BaseTest {
     public void bookStoreTest() {
         page.navigate("https://demoqa.com/books");
         int randomNumberOfBooks = Randomizer.randomNumber(2, 5);
+
+        page.onDialog(dialog -> {
+            Assertions.assertEquals(dialogPageHelper.expectedDialogMessage, dialog.message());
+            dialogPageHelper.expectedDialogMessage = null;
+            dialog.accept();
+            dialogPageHelper.release();
+        });
+
         List<Book> books = new LinkedList<>();
         for (int i = 0; i < randomNumberOfBooks; i++) {
             Response response = page.waitForResponse("https://demoqa.com/BookStore/v1/Book?ISBN=*", () ->
@@ -52,11 +64,9 @@ public class LoginTest extends BaseTest {
             Book bookFromResponse = apiBook.getBook(response);
             if (!books.contains(bookFromResponse)) {
                 books.add(bookFromResponse);
-                page.onceDialog(dialog -> {
-                    Assertions.assertEquals("Book added to your collection.", dialog.message());
-                    dialog.accept();
-                });
+                dialogPageHelper.beforeDialog("Book added to your collection.");
                 book.getAddToCollectionButton().click();
+                dialogPageHelper.waitForDialog();
             } else if (books.contains(bookFromResponse)) {
                 i--;
             }
@@ -69,10 +79,6 @@ public class LoginTest extends BaseTest {
             assertThat(profile.getBooksAuthor().nth(i)).containsText(books.get(i).getAuthor());
             assertThat(profile.getBooksPublisher().nth(i)).containsText(books.get(i).getPublisher());
         }
-        page.onceDialog(dialog -> {
-            Assertions.assertEquals("Book deleted.", dialog.message());
-            dialog.accept();
-        });
         Locator deletedBook = profile.getDeletedBook().nth(1);
         String deletedBookTitle = profile.getBooksTitle().nth(1).textContent();
         deletedBook.click();
@@ -81,18 +87,22 @@ public class LoginTest extends BaseTest {
         assertThat(dialog.getDialogTitle()).containsText("Delete Book");
         assertThat(dialog.getOkButton()).isVisible();
         assertThat(dialog.getCancelButton()).isVisible();
+
+        dialogPageHelper.beforeDialog("Book deleted.");
         dialog.getOkButton().click();
+        dialogPageHelper.waitForDialog();
+
         assertThat(profile.getDeletedBooksTitle(deletedBookTitle)).hasCount(0);
-        page.onceDialog(dialog -> {
-            Assertions.assertEquals("All Books deleted.", dialog.message());
-            dialog.accept();
-        });
         profile.getDeleteAllBooksButton().click();
         assertThat(dialog.getDialogBody()).containsText("Do you want to delete all books?");
         assertThat(dialog.getDialogTitle()).containsText("Delete All Books");
         assertThat(dialog.getCancelButton()).isVisible();
         assertThat(dialog.getOkButton()).isVisible();
+
+        dialogPageHelper.beforeDialog("All Books deleted.");
         dialog.getOkButton().click();
+        dialogPageHelper.waitForDialog();
+
         assertThat(profile.getEmptyCollection()).containsText("No rows found");
         assertThat(profile.getBooksTitle()).hasCount(0);
     }
