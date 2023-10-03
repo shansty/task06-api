@@ -45,18 +45,6 @@ public class LoginTest extends BaseTest {
     public void bookStoreTest() {
         page.navigate("https://demoqa.com/books");
         int randomNumberOfBooks = Randomizer.randomNumber(2, 5);
-        page.onDialog(dialog -> {
-            if (dialog.message().contains("Book added to your collection")) {
-                Assertions.assertEquals("Book added to your collection.", dialog.message());
-            } else if (dialog.message().contains("Book deleted")) {
-                Assertions.assertEquals("Book deleted.", dialog.message());
-            } else if (dialog.message().contains("All Books deleted")) {
-                Assertions.assertEquals("All Books deleted.", dialog.message());
-            } else {
-                throw new AssertionError("Dialog message is wrong " + dialog.message());
-            }
-            dialog.accept();
-        });
         List<Book> books = new LinkedList<>();
         for (int i = 0; i < randomNumberOfBooks; i++) {
             Response response = page.waitForResponse("https://demoqa.com/BookStore/v1/Book?ISBN=*", () ->
@@ -64,10 +52,16 @@ public class LoginTest extends BaseTest {
             Book bookFromResponse = apiBook.getBook(response);
             if (!books.contains(bookFromResponse)) {
                 books.add(bookFromResponse);
+
+                page.onceDialog(dialog -> {
+                    Assertions.assertEquals("Book added to your collection.", dialog.message());
+                    dialog.accept();
+                });
+
+                book.getAddToCollectionButton().click();
             } else if (books.contains(bookFromResponse)) {
                 i--;
             }
-            book.getAddToCollectionButton().click();
             book.getBackToBookStoreButton().click();
         }
         profile.getProfileButton().click();
@@ -77,6 +71,12 @@ public class LoginTest extends BaseTest {
             assertThat(profile.getBooksAuthor().nth(i)).containsText(books.get(i).getAuthor());
             assertThat(profile.getBooksPublisher().nth(i)).containsText(books.get(i).getPublisher());
         }
+
+        page.onceDialog(dialog -> {
+            Assertions.assertEquals("Book deleted.", dialog.message());
+            dialog.accept();
+        });
+
         Locator deletedBook = profile.getDeletedBook().nth(1);
         String deletedBookTitle = profile.getBooksTitle().nth(1).textContent();
         deletedBook.click();
@@ -87,6 +87,12 @@ public class LoginTest extends BaseTest {
         assertThat(dialog.getCancelButton()).isVisible();
         dialog.getOkButton().click();
         assertThat(profile.getDeletedBooksTitle(deletedBookTitle)).hasCount(0);
+
+        page.onceDialog(dialog -> {
+            Assertions.assertEquals("All Books deleted.", dialog.message());
+            dialog.accept();
+        });
+
         profile.getDeleteAllBooksButton().click();
         assertThat(dialog.getDialogBody()).containsText("Do you want to delete all books?");
         assertThat(dialog.getDialogTitle()).containsText("Delete All Books");
