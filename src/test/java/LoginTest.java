@@ -57,7 +57,6 @@ public class LoginTest extends BaseTest {
                     dialog.accept();
                 });
                 book.getAddToCollectionButton().click();
-                page.waitForTimeout(2000);
             } else if (books.contains(bookFromResponse)) {
                 i--;
             }
