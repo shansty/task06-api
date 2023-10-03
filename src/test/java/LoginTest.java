@@ -1,12 +1,10 @@
 import by.itechartgroup.anastasiya.shirochina.api.ApiBookStore;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
-import by.itechartgroup.anastasiya.shirochina.pages.BookStorePage;
 import by.itechartgroup.anastasiya.shirochina.utils.Randomizer;
 import by.itechartgroup.anastasiya.shirochina.utils.Reader;
 import by.itechartgroup.anastasiya.shirochina.utils.Route;
 import by.itechartgroup.anastasiya.shirochina.utils.Screenshot;
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -44,7 +42,7 @@ public class LoginTest extends BaseTest {
     }
 
     @Test
-    public void bookStoreTest () {
+    public void bookStoreTest() {
         page.navigate("https://demoqa.com/books");
         int randomNumberOfBooks = Randomizer.randomNumber(2, 5);
         page.onDialog(dialog -> {
@@ -55,18 +53,14 @@ public class LoginTest extends BaseTest {
             } else if (dialog.message().contains("All Books deleted")) {
                 Assertions.assertEquals("All Books deleted.", dialog.message());
             } else {
-                try {
-                    throw new Exception("Dialog message is wrong " + dialog.message());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                throw new AssertionError("Dialog message is wrong " + dialog.message());
             }
             dialog.accept();
         });
         List<Book> books = new LinkedList<>();
         for (int i = 0; i < randomNumberOfBooks; i++) {
             Response response = page.waitForResponse("https://demoqa.com/BookStore/v1/Book?ISBN=*", () ->
-                    bookStore.getBooksArrayLocator().nth(Randomizer.randomNumber(0, bookStore.getBooksArrayLocator().count()-1)).click());
+                    bookStore.getBooksArrayLocator().nth(Randomizer.randomNumber(0, 7)).click());
             Book bookFromResponse = apiBook.getBook(response);
             if (!books.contains(bookFromResponse)) {
                 books.add(bookFromResponse);
@@ -94,7 +88,7 @@ public class LoginTest extends BaseTest {
         dialog.getOkButton().click();
         assertThat(profile.getDeletedBooksTitle(deletedBookTitle)).hasCount(0);
         profile.getDeleteAllBooksButton().click();
-        assertThat(dialog.getDialogBodyForAllBooks()).containsText("Do you want to delete all books?");
+        assertThat(dialog.getDialogBody()).containsText("Do you want to delete all books?");
         assertThat(dialog.getDialogTitle()).containsText("Delete All Books");
         assertThat(dialog.getCancelButton()).isVisible();
         assertThat(dialog.getOkButton()).isVisible();

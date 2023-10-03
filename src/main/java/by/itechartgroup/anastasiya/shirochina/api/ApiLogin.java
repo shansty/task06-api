@@ -24,6 +24,11 @@ public class ApiLogin {
                 RequestOptions.create().setHeader("Authorization", "Bearer " + profile.getCookieToken()));
         return responseNew;
     }
+    public APIResponse sendDeleteRequest(String token, String userID) {
+        responseNew = playwright.request().newContext().delete("https://demoqa.com/BookStore/v1/Books?UserId=" + userID,
+                RequestOptions.create().setHeader("Authorization", "Bearer " + token));
+        return responseNew;
+    }
     public ApiLogin getTextFromResponse(){
         responseNewText = responseNew.text();
         return this;

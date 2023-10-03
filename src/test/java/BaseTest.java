@@ -2,7 +2,14 @@ import by.itechartgroup.anastasiya.shirochina.api.ApiBook;
 import by.itechartgroup.anastasiya.shirochina.api.ApiLogin;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
 import by.itechartgroup.anastasiya.shirochina.pages.*;
+import by.itechartgroup.anastasiya.shirochina.utils.CookiesFromFile;
+import by.itechartgroup.anastasiya.shirochina.utils.Route;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.RequestOptions;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,8 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class BaseTest {
     static Playwright playwright;
@@ -22,7 +32,7 @@ public class BaseTest {
     static ProfilePage profile;
     BookStorePage bookStore;
     BookPage book;
-    ApiLogin apiLogin;
+    static ApiLogin apiLogin;
     static File file;
     ApiBook apiBook;
     static Dialog dialog;
@@ -40,6 +50,7 @@ public class BaseTest {
         page.waitForURL("https://demoqa.com/profile");
         context.storageState(new BrowserContext.StorageStateOptions().setPath(Paths.get(file.getPath())));
         profile = new ProfilePage(page);
+        apiLogin = new ApiLogin(playwright, profile);
         closeAllBook();
         page.close();
         context.close();
@@ -64,7 +75,6 @@ public class BaseTest {
         profile = new ProfilePage(page);
         bookStore = new BookStorePage(page);
         book = new BookPage(page);
-        apiLogin = new ApiLogin(playwright, profile);
         apiBook = new ApiBook();
     }
 
@@ -72,12 +82,9 @@ public class BaseTest {
     void closeContext() {
         context.close();
     }
-    private static void closeAllBook() {
-        dialog = new Dialog(page);
-        List<Locator> booksForDelete = profile.getDeletedBook().all();
-        for (int i = 0; i <booksForDelete.size(); i++) {
-            profile.getDeletedBook().nth(0).click();
-            dialog.getOkButton().click();
-        }
+    private static void closeAllBook() throws IOException {
+        String token = CookiesFromFile.getCookiesByNameFromFile(file, "token");
+        String userID = CookiesFromFile.getCookiesByNameFromFile(file, "userID");
+        apiLogin.sendDeleteRequest(token, userID);
     }
 }
