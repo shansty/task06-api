@@ -3,13 +3,7 @@ import by.itechartgroup.anastasiya.shirochina.api.ApiLogin;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
 import by.itechartgroup.anastasiya.shirochina.pages.*;
 import by.itechartgroup.anastasiya.shirochina.utils.CookiesFromFile;
-import by.itechartgroup.anastasiya.shirochina.utils.Route;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.RequestOptions;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,11 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class BaseTest {
     static Playwright playwright;
