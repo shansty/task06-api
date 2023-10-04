@@ -1,4 +1,4 @@
-import by.itechartgroup.anastasiya.shirochina.DialogPageHelper;
+import by.itechartgroup.anastasiya.shirochina.dialogs.DialogPageHelper;
 import by.itechartgroup.anastasiya.shirochina.api.ApiBook;
 import by.itechartgroup.anastasiya.shirochina.api.ApiLogin;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;

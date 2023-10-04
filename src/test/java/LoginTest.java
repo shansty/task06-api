@@ -1,4 +1,3 @@
-import by.itechartgroup.anastasiya.shirochina.DialogPageHelper;
 import by.itechartgroup.anastasiya.shirochina.api.ApiBookStore;
 import by.itechartgroup.anastasiya.shirochina.dialogs.Dialog;
 import by.itechartgroup.anastasiya.shirochina.utils.Randomizer;
