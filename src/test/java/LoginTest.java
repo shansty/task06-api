@@ -4,8 +4,10 @@ import by.itechartgroup.anastasiya.shirochina.utils.Randomizer;
 import by.itechartgroup.anastasiya.shirochina.utils.Reader;
 import by.itechartgroup.anastasiya.shirochina.utils.Route;
 import by.itechartgroup.anastasiya.shirochina.utils.Screenshot;
+import com.microsoft.playwright.APIResponse;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Response;
+import com.microsoft.playwright.options.RequestOptions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import by.itechartgroup.anastasiya.shirochina.pojos.Book;
@@ -14,13 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class LoginTest extends BaseTest {
-    Semaphore semaphore = new Semaphore(0);
-
     @Test
     public void loginFormTest() throws IOException {
         page.navigate("https://demoqa.com/profile");
@@ -39,6 +38,7 @@ public class LoginTest extends BaseTest {
         Route.modifiedResponseWithDifferentBody(page, "pages", quantityOfPageApi, "https://demoqa.com/BookStore/v1/Book?ISBN=*");
         bookStore.clickBookByNumber(Randomizer.randomNumber(0, bookStore.getBooksArrayLocator().all().size() - 1));
         assertThat(book.getQuantityOfPageUi()).containsText((quantityOfPageApi));
+        page.waitForTimeout(2000);
         assertThat(apiLogin.sendRequest()).isOK();
         Assertions.assertEquals(new ArrayList<>(), apiLogin.getTextFromResponse().getBooksFromResponse());
         Assertions.assertEquals(Reader.readPropertyUserName(), apiLogin.getTextFromResponse().getUserNameFromResponse());

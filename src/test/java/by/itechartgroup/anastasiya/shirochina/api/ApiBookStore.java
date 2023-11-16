@@ -4,8 +4,6 @@ import by.itechartgroup.anastasiya.shirochina.pojos.Book;
 import by.itechartgroup.anastasiya.shirochina.pojos.Root;
 import com.google.gson.Gson;
 import com.microsoft.playwright.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
